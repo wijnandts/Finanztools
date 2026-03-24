@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanz-Tools | Berufskolleg</title>
+    <style>
+        :root { --primary: #005aab; --bg: #f4f7f9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; }
+        .container { max-width: 800px; margin: auto; }
+        h1 { color: var(--primary); margin-bottom: 30px; }
+        
+        /* Das Kachel-System */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        
+        .card { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            text-decoration: none; 
+            color: #333; 
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-top: 5px solid var(--primary);
+        }
+        
+        .card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
+        }
+
+        .card h3 { margin: 10px 0; color: var(--primary); }
+        .card p { font-size: 0.9rem; color: #666; }
+        .icon { font-size: 3rem; margin-bottom: 10px; }
+
+        .footer { margin-top: 50px; font-size: 0.8rem; color: #999; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Digitale Lernhelfer: Finanzierung</h1>
+    <p>Wähle ein Modul aus, um mit der Berechnung zu beginnen:</p>
+
+    <div class="grid">
+        <a href="darlehensvergleich.html" class="card">
+            <div class="icon">📊</div>
+            <h3>Darlehensvergleich</h3>
+            <p>Ratendarlehen, Fälligkeitsdarlehen & Annuität im Check.</p>
+        </a>
+
+        <a href="#" class="card" style="opacity: 0.6; cursor: not-allowed;">
+            <div class="icon">🪙</div>
+            <h3>Skontorechner</h3>
+            <p>Demnächst verfügbar: Lohnt sich die Skonto-Zahlung?</p>
+        </a>
+    </div>
+
+    <div class="footer">
+        Erstellt für die BFS2 am Berufskolleg NRW
+    </div>
+</div>
+
+</body>
+</html>
