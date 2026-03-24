@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanzplan Mediaworld - Jahresübersicht</title>
+    <style>
+        :root {
+            --primary: #005aa9;
+            --accent: #ffcc00;
+            --bg: #f4f7f6;
+        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .wrapper { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { color: var(--primary); margin-top: 0; border-bottom: 3px solid var(--accent); display: inline-block; padding-right: 20px; }
+        
+        .start-balance-box { 
+            background: #e9ecef; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px;
+            border: 2px solid var(--primary);
+        }
+        .start-balance-box label { font-weight: bold; }
+        .start-balance-box input { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-weight: bold; width: 120px; }
+
+        .scroll-container { overflow-x: auto; border: 1px solid #ddd; }
+        table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+        th, td { border: 1px solid #dee2e6; padding: 8px; text-align: right; min-width: 85px; }
+        
+        .sticky-col { 
+            position: sticky; 
+            left: 0; 
+            background: #f8f9fa; 
+            text-align: left; 
+            font-weight: bold; 
+            min-width: 160px; 
+            z-index: 2; 
+        }
+        th.sticky-col { background: var(--primary); color: white; }
+        thead th { background: var(--primary); color: white; }
+        
+        .section-head { background: #dee2e6; font-weight: bold; text-align: left; }
+        .total-row { background: #f1f3f5; font-weight: bold; }
+        input[type="number"] { width: 90%; padding: 4px; text-align: right; border: 1px solid #ccc; border-radius: 3px; }
+        
+        .positive { color: #28a745; font-weight: bold; }
+        .negative { color: #dc3545; font-weight: bold; }
+        
+        .footer { margin-top: 20px; }
+        button { padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <h1>Finanzplan Mediaworld GmbH</h1>
+    
+    <div class="start-balance-box">
+        <label for="startBalance">Kontostand am 01.01. (€):</label>
+        <input type="number" id="startBalance" value="0" oninput="update()">
+        <small>(Anfangsbestand aus dem Vorjahr)</small>
+    </div>
+
+    <div class="scroll-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="sticky-col">Posten</th>
+                    <th>Jan</th><th>Feb</th><th>Mär</th><th>Apr</th><th>Mai</th><th>Jun</th>
+                    <th>Jul</th><th>Aug</th><th>Sep</th><th>Okt</th><th>Nov</th><th>Dez</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="section-head"><td colspan="13" class="sticky-col">EINNAHMEN</td></tr>
+                <tr><td class="sticky-col">Erlöse</td>
+                    <script>for(let i=0; i<12; i++) document.write(`<td><input type="number" class="in-${i}" oninput="update()"></td>`)</script>
+                </tr>
+                <tr><td class="sticky-col">Einlagen</td>
+                    <script>for(let i=0; i<12; i++) document.write(`<td><input type="number" class="in-${i}" oninput="update()"></td>`)</script>
+                </tr>
+                <tr class="total-row"><td class="sticky-col">Summe Einnahmen</td>
+                    <script>for(let i=0; i<12; i++) document.write(`<td id="sum-in-${i}">0,00</td>`)</script>
+                </tr>
+
+                <tr class="section-head"><td colspan="13" class="sticky-col">AUSGABEN</td></tr>
+                <tr><td class="sticky-col">Wareneinkäufe</td>
+                    <script>for(let i=0; i<12; i++) document.write(`<td><input type="number" class="out-${i}" oninput="update()"></td>`)</script>
+                </tr>
+                <tr><td class="sticky-col">Sonstige Ausgaben</td>
+                    <script>for(let i=0; i<12; i++) document.write(`<td><input type="number" class="out-${i}" oninput="update()"></td>`)</script>
+                </tr>
+                <tr><td class="sticky-col">Darlehenstilgung</td>
+                    <script>for(let i=0; i<12; i++) document.write(`<td><input type="number" class="out-${i}" oninput="update()"></td>`)</script>
+                </tr>
+                <tr><td class="sticky-col">Investition</td>
+                    <script>for(let i=0; i<12; i++) document.write(`<td><input type="number" class="out-${i}" oninput="update()"></td>`)</script>
+                </tr>
+                <tr class="total-row"><td class="sticky-col">Summe Ausgaben</td>
+                    <script>for(let i=0; i<12; i++) document.write(`<td id="sum-out-${i}">0,00</td>`)</script>
+                </tr>
+
+                <tr class="section-head"><td colspan="13" class="sticky-col">LIQUIDITÄTSSTATUS</td></tr>
+                <tr><td class="sticky-col">Über-/Unterdeckung</td>
+                    <script>for(let i=0; i<12; i++) document.write(`<td id="diff-${i}">0,00</td>`)</script>
+                </tr>
+                <tr style="background: #fff3cd; font-weight: bold;">
+                    <td class="sticky-col">Kontostand (Ende)</td>
+                    <script>for(let i=0; i<12; i++) document.write(`<td id="bank-${i}">0,00</td>`)</script>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <button onclick="window.print()">Als PDF speichern</button>
+        <button style="background:#6c757d" onclick="location.reload()">Zurücksetzen</button>
+    </div>
+</div>
+
+<script>
+    function update() {
+        let startBalance = parseFloat(document.getElementById('startBalance').value) || 0;
+        let currentBank = startBalance;
+
+        for (let i = 0; i < 12; i++) {
+            // Einnahmen
+            let sIn = 0;
+            document.querySelectorAll(`.in-${i}`).forEach(el => sIn += Number(el.value) || 0);
+            document.getElementById(`sum-in-${i}`).innerText = sIn.toLocaleString('de-DE', {minimumFractionDigits: 2});
+
+            // Ausgaben
+            let sOut = 0;
+            document.querySelectorAll(`.out-${i}`).forEach(el => sOut += Number(el.value) || 0);
+            document.getElementById(`sum-out-${i}`).innerText = sOut.toLocaleString('de-DE', {minimumFractionDigits: 2});
+
+            // Monatliches Saldo
+            let diff = sIn - sOut;
+            let diffEl = document.getElementById(`diff-${i}`);
+            diffEl.innerText = diff.toLocaleString('de-DE', {minimumFractionDigits: 2});
+            diffEl.className = diff >= 0 ? 'positive' : 'negative';
+
+            // Neuer Kontostand
+            currentBank += diff;
+            let bankEl = document.getElementById(`bank-${i}`);
+            bankEl.innerText = currentBank.toLocaleString('de-DE', {minimumFractionDigits: 2});
+            bankEl.className = currentBank >= 0 ? 'positive' : 'negative';
+        }
+    }
+    // Initialer Aufruf
+    update();
+</script>
+
+</body>
+</html>
