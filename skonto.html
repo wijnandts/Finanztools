@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanz-Check: Selbstkontrolle</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: #eef2f7; padding: 15px; color: #333; }
+        .container { max-width: 450px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        h1 { color: #005A9B; font-size: 1.3rem; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #005A9B; padding-bottom: 10px; }
+        .section-title { font-size: 0.9rem; color: #666; text-transform: uppercase; margin-top: 20px; margin-bottom: 10px; font-weight: bold; }
+        .input-group { margin-bottom: 12px; }
+        label { display: block; font-size: 0.85rem; margin-bottom: 4px; color: #444; }
+        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem; transition: border-color 0.3s; }
+        input:focus { border-color: #005A9B; outline: none; }
+        .check-input { background: #fff9db; border-color: #fab005; }
+        button { width: 100%; padding: 15px; background: #005A9B; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; text-align: center; font-weight: bold; }
+        .correct { background: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+        .wrong { background: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+        .feedback-area { margin-top: 15px; background: #f8f9fa; padding: 10px; border-radius: 8px; font-size: 0.85rem; color: #555; display: none; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Finanz-Coach: Skonto</h1>
+    
+    <div class="section-title">1. Gegebene Werte</div>
+    <div class="input-group">
+        <label>Rechnungsbetrag (€):</label>
+        <input type="number" id="betrag" step="0.01">
+    </div>
+    <div class="input-group">
+        <label>Skonto (%):</label>
+        <input type="number" id="skontoP" step="0.1">
+    </div>
+    <div class="input-group">
+        <label>Zinssatz Kredit (% p.a.):</label>
+        <input type="number" id="zinsP" step="0.1">
+    </div>
+    <div class="input-group">
+        <label>Kreditzeitraum (Tage):</label>
+        <input type="number" id="tage">
+    </div>
+
+    <div class="section-title">2. Deine Rechnung</div>
+    <div class="input-group">
+        <label>Dein berechneter Vorteil/Ersparnis (€):</label>
+        <input type="number" id="userErgebnis" class="check-input" placeholder="0,00" step="0.01">
+    </div>
+
+    <button onclick="checkResult()">Ergebnis prüfen</button>
+
+    <div id="statusBox" class="result"></div>
+    <div id="feedback" class="feedback-area"></div>
+</div>
+
+<script>
+function checkResult() {
+    // Werte holen
+    const B = parseFloat(document.getElementById('betrag').value);
+    const sP = parseFloat(document.getElementById('skontoP').value);
+    const zP = parseFloat(document.getElementById('zinsP').value);
+    const t = parseInt(document.getElementById('tage').value);
+    const userVorteil = parseFloat(document.getElementById('userErgebnis').value);
+
+    if ([B, sP, zP, t, userVorteil].some(isNaN)) {
+        alert("Bitte erst alle Felder (inkl. deiner eigenen Rechnung) ausfüllen!");
+        return;
+    }
+
+    // Berechnung Logik
+    const skontoEuro = B * (sP / 100);
+    const darlehen = B - skontoEuro;
+    const zinsen = (darlehen * zP * t) / 36000;
+    const korrekterVorteil = skontoEuro - zinsen;
+
+    const statusBox = document.getElementById('statusBox');
+    const feedback = document.getElementById('feedback');
+    
+    statusBox.style.display = "block";
+    feedback.style.display = "block";
+
+    // Toleranzbereich von 0.05 € wegen Rundungen
+    const diff = Math.abs(userVorteil - korrekterVorteil);
+
+    if (diff < 0.05) {
+        statusBox.className = "result correct";
+        statusBox.innerHTML = "✅ Richtig gerechnet!";
+    } else {
+        statusBox.className = "result wrong";
+        statusBox.innerHTML = `❌ Fast! Die Abweichung ist zu groß.`;
+    }
+
+    feedback.innerHTML = `
+        <b>Lösungsweg:</b><br>
+        1. Skontobetrag: ${skontoEuro.toFixed(2)} €<br>
+        2. Kredithöhe: ${darlehen.toFixed(2)} €<br>
+        3. Kreditzinsen: (${darlehen.toFixed(2)} * ${zP} * ${t}) / 36000 = ${zinsen.toFixed(2)} €<br>
+        <b>4. Gesamtvorteil: ${korrekterVorteil.toFixed(2)} €</b>
+    `;
+}
+</script>
+
+</body>
+</html>
