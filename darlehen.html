@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanzcheck BFS2: Der große Summenvergleich</title>
+    <style>
+        :root { --primary: #005aab; --success: #28a745; --error: #dc3545; --bg: #f4f7f9; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); padding: 10px; font-size: 13px; }
+        .container { max-width: 1200px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        
+        .setup-area { background: #e2e8f0; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; }
+        .input-group { flex: 1; min-width: 140px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: var(--primary); font-size: 0.8rem; }
+        input[type="number"] { width: 100%; padding: 10px; border: 2px solid #cbd5e0; border-radius: 6px; font-size: 1rem; }
+        
+        .result-box { background: #fffde7; border: 2px dashed var(--primary); padding: 15px; border-radius: 8px; margin-bottom: 25px; text-align: center; }
+        .result-box strong { font-size: 1.2rem; color: var(--primary); }
+
+        h2 { color: #2d3748; border-bottom: 3px solid var(--primary); padding-bottom: 5px; margin-top: 40px; text-transform: uppercase; font-size: 1rem; }
+        
+        .table-wrapper { overflow-x: auto; margin-top: 10px; border: 1px solid #e2e8f0; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; min-width: 950px; }
+        th { background: #edf2f7; color: #4a5568; padding: 10px; font-size: 0.75rem; border: 1px solid #e2e8f0; }
+        td { border: 1px solid #e2e8f0; padding: 0; }
+        
+        .cell-input { width: 100%; height: 40px; border: none; background: #fffde7; text-align: right; padding-right: 10px; box-sizing: border-box; font-family: monospace; font-size: 0.95rem; }
+        .cell-input:focus { background: #fff; outline: 2px inset var(--primary); }
+        
+        .sum-row { background: #e2e8f0; font-weight: bold; }
+        .sum-label { text-align: center; padding: 10px; font-weight: bold; color: #2d3748; }
+
+        .correct { background-color: #c6f6d5 !important; color: #22543d; font-weight: bold; }
+        .wrong { background-color: #fed7d7 !important; color: #822727; }
+        
+        .btn-check { width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; margin: 25px 0; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Darlehensarten im Vergleich</h1>
+
+    <div class="setup-area">
+        <div class="input-group">
+            <label>Darlehen (€)</label>
+            <input type="number" id="inp_K" value="50000" oninput="calculateAnnuität()">
+        </div>
+        <div class="input-group">
+            <label>Zins (% p.a.)</label>
+            <input type="number" id="inp_p" value="6" step="0.1" oninput="calculateAnnuität()">
+        </div>
+        <div class="input-group">
+            <label>Laufzeit (Jahre)</label>
+            <input type="number" id="inp_n" value="3" oninput="calculateAnnuität()">
+        </div>
+        <button onclick="initApp()" style="padding:10px; cursor:pointer; background:#718096; color:white; border:none; border-radius:6px;">Reset</button>
+    </div>
+
+    <div class="result-box" id="ann-display">
+        Die berechnete Annuität beträgt: <strong id="val-ann">0,00 €</strong>
+    </div>
+
+    <div id="tables-container"></div>
+
+    <button class="btn-check" onclick="checkAll()">ALLE BERECHNUNGEN PRÜFEN</button>
+</div>
+
+<script>
+let K, p, n, annRate;
+
+function calculateAnnuität() {
+    K = parseFloat(document.getElementById('inp_K').value) || 0;
+    let p_raw = parseFloat(document.getElementById('inp_p').value) || 0;
+    p = p_raw / 100;
+    n = parseInt(document.getElementById('inp_n').value) || 0;
+
+    if (K > 0 && p > 0 && n > 0) {
+        let q = 1 + p;
+        annRate = K * (Math.pow(q, n) * p) / (Math.pow(q, n) - 1);
+        document.getElementById('val-ann').innerText = annRate.toLocaleString('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + " €";
+    }
+}
+
+function initApp() {
+    calculateAnnuität();
+    renderTables();
+}
+
+function renderTables() {
+    const types = [
+        { id: "rat", name: "1. Ratendarlehen", last: "Gesamtleistung" },
+        { id: "fall", name: "2. Fälligkeitsdarlehen", last: "Gesamtleistung" },
+        { id: "ann", name: "3. Annuitätendarlehen", last: "Annuität" }
+    ];
+
+    let html = "";
+    types.forEach(t => {
+        html += `<h2>${t.name}</h2><div class="table-wrapper"><table><tr>
+            <th style="width:40px">Jahr</th>
+            <th>Darlehen Jahresanfang</th>
+            <th>Darlehen Jahresende</th>
+            <th>Tilgung</th>
+            <th>Zinsen</th>
+            <th>${t.last}</th>
+        </tr>`;
+        for(let i=1; i<=n; i++) {
+            html += `<tr>
+                <td style="text-align:center; background:#f8fafc; font-weight:bold;">${i}</td>
+                <td><input type="number" step="0.01" class="cell-input" data-type="${t.id}" data-row="${i}" data-col="anfang"></td>
+                <td><input type="number" step="0.01" class="cell-input" data-type="${t.id}" data-row="${i}" data-col="ende"></td>
+                <td><input type="number" step="0.01" class="cell-input" data-type="${t.id}" data-row="${i}" data-col="tilg"></td>
+                <td><input type="number" step="0.01" class="cell-input" data-type="${t.id}" data-row="${i}" data-col="zins"></td>
+                <td><input type="number" step="0.01" class="cell-input" data-type="${t.id}" data-row="${i}" data-col="last"></td>
+            </tr>`;
+        }
+        // Summenzeile
+        html += `<tr class="sum-row">
+            <td class="sum-label" colspan="3">SUMMEN:</td>
+            <td><input type="number" step="0.01" class="cell-input" data-type="${t.id}" data-row="sum" data-col="tilg"></td>
+            <td><input type="number" step="0.01" class="cell-input" data-type="${t.id}" data-row="sum" data-col="zins"></td>
+            <td><input type="number" step="0.01" class="cell-input" data-type="${t.id}" data-row="sum" data-col="last"></td>
+        </tr></table></div>`;
+    });
+    document.getElementById('tables-container').innerHTML = html;
+}
+
+function checkAll() {
+    const inputs = document.querySelectorAll('.cell-input');
+    inputs.forEach(input => {
+        const type = input.dataset.type;
+        const col = input.dataset.col;
+        const rowId = input.dataset.row;
+        const userVal = parseFloat(input.value);
+        let correctVal = 0;
+        let t_rate = K / n;
+
+        // Hilfsfunktion für Zeilenberechnung
+        function getRowValues(r) {
+            if (type === "rat") {
+                let a = K - (r - 1) * t_rate;
+                let z = a * p;
+                return { anfang: a, ende: a - t_rate, tilg: t_rate, zins: z, last: z + t_rate };
+            } else if (type === "fall") {
+                let z = K * p;
+                let ti = (r === n) ? K : 0;
+                return { anfang: K, ende: (r === n) ? 0 : K, tilg: ti, zins: z, last: z + ti };
+            } else if (type === "ann") {
+                let curA = K;
+                let res;
+                for(let j=1; j<=r; j++) {
+                    let zi = curA * p;
+                    let ti = (j === n) ? curA : (annRate - zi);
+                    res = { anfang: curA, ende: curA - ti, tilg: ti, zins: zi, last: (j === n) ? (zi + curA) : annRate };
+                    curA -= ti;
+                }
+                return res;
+            }
+        }
+
+        if (rowId === "sum") {
+            // Summenberechnung
+            for(let i=1; i<=n; i++) {
+                correctVal += getRowValues(i)[col];
+            }
+        } else {
+            // Einzelzeilenberechnung
+            correctVal = getRowValues(parseInt(rowId))[col];
+        }
+
+        if (Math.abs(userVal - correctVal) < 0.10) { // Etwas mehr Toleranz für Summen (Rundungsketten)
+            input.className = "cell-input correct";
+        } else {
+            input.className = "cell-input wrong";
+            input.title = "Korrekt: " + correctVal.toLocaleString('de-DE', {minimumFractionDigits:2});
+        }
+    });
+}
+
+initApp();
+</script>
+</body>
+</html>
