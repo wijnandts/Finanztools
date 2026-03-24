@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investitionsvergleich Mediaworld - 3 Alternativen</title>
+    <style>
+        :root { --primary: #005596; --bg: #e9ecef; --success: #28a745; --danger: #dc3545; --vw: #001e50; --opel: #ffea00; --lada: #cc0000; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 10px; }
+        .container { max-width: 1100px; margin: auto; }
+        h1 { color: var(--primary); text-align: center; font-size: 1.6rem; margin-bottom: 20px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; }
+        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 8px solid var(--primary); }
+        
+        .card.alt1 { border-top-color: var(--vw); }
+        .card.alt2 { border-top-color: #f7d117; } /* Opel Gelb */
+        .card.alt3 { border-top-color: var(--lada); }
+
+        h3 { margin-top: 0; text-align: center; color: #333; }
+        .section-title { font-size: 0.8rem; font-weight: bold; color: #777; margin: 10px 0 5px 0; text-transform: uppercase; border-bottom: 1px solid #eee; }
+        
+        label { display: block; font-size: 0.8rem; color: #444; margin-top: 8px; }
+        input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 0.95rem; }
+        
+        .highlight { background: #fff9db; padding: 8px; border-radius: 5px; margin-top: 10px; border: 1px solid #ffe066; }
+        .total-area { background: #f0f7ff; padding: 8px; border-radius: 5px; margin-top: 10px; border: 1px solid #cfe2ff; }
+
+        .decision-box { background: white; margin-top: 25px; padding: 20px; border-radius: 15px; text-align: center; border: 2px solid var(--primary); }
+        select { padding: 10px; font-size: 1rem; border-radius: 5px; width: 250px; margin: 10px 0; }
+        
+        button { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        #result-display { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; font-weight: bold; }
+        
+        .correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📊 Kostenvergleich der Investitionen</h1>
+
+    <div class="grid">
+        <div class="card alt1">
+            <h3>Alternative 1</h3>
+            <label>Name des Modells:</label>
+            <input type="text" id="name1" placeholder="z.B. VW Koala">
+            
+            <div class="section-title">Basisdaten</div>
+            <label>Anschaffungskosten (€):</label>
+            <input type="number" id="ak1">
+            <label>Nutzungsdauer (Jahre):</label>
+            <input type="number" id="jahre1">
+            
+            <div class="highlight">
+                <label><b>AK pro Monat (€):</b></label>
+                <input type="number" id="ak_monat1" step="0.01">
+            </div>
+
+            <div class="section-title">Laufende Kosten</div>
+            <label>Werkstatt / Wartung (€):</label>
+            <input type="number" id="w1">
+            <label>Betriebskosten (€):</label>
+            <input type="number" id="b1">
+            <label>Steuern / Vers. (€):</label>
+            <input type="number" id="s1">
+
+            <div class="total-area">
+                <label><b>Gesamtkosten p.M. (€):</b></label>
+                <input type="number" id="total1" step="0.01">
+            </div>
+        </div>
+
+        <div class="card alt2">
+            <h3>Alternative 2</h3>
+            <label>Name des Modells:</label>
+            <input type="text" id="name2" placeholder="z.B. Opel Cool">
+            
+            <div class="section-title">Basisdaten</div>
+            <label>Anschaffungskosten (€):</label>
+            <input type="number" id="ak2">
+            <label>Nutzungsdauer (Jahre):</label>
+            <input type="number" id="jahre2">
+            
+            <div class="highlight">
+                <label><b>AK pro Monat (€):</b></label>
+                <input type="number" id="ak_monat2" step="0.01">
+            </div>
+
+            <div class="section-title">Laufende Kosten</div>
+            <label>Werkstatt / Wartung (€):</label>
+            <input type="number" id="w2">
+            <label>Betriebskosten (€):</label>
+            <input type="number" id="b2">
+            <label>Steuern / Vers. (€):</label>
+            <input type="number" id="s2">
+
+            <div class="total-area">
+                <label><b>Gesamtkosten p.M. (€):</b></label>
+                <input type="number" id="total2" step="0.01">
+            </div>
+        </div>
+
+        <div class="card alt3">
+            <h3>Alternative 3</h3>
+            <label>Name des Modells:</label>
+            <input type="text" id="name3" placeholder="z.B. Lada Nova">
+            
+            <div class="section-title">Basisdaten</div>
+            <label>Anschaffungskosten (€):</label>
+            <input type="number" id="ak3">
+            <label>Nutzungsdauer (Jahre):</label>
+            <input type="number" id="jahre3">
+            
+            <div class="highlight">
+                <label><b>AK pro Monat (€):</b></label>
+                <input type="number" id="ak_monat3" step="0.01">
+            </div>
+
+            <div class="section-title">Laufende Kosten</div>
+            <label>Werkstatt / Wartung (€):</label>
+            <input type="number" id="w3">
+            <label>Betriebskosten (€):</label>
+            <input type="number" id="b3">
+            <label>Steuern / Vers. (€):</label>
+            <input type="number" id="s3">
+
+            <div class="total-area">
+                <label><b>Gesamtkosten p.M. (€):</b></label>
+                <input type="number" id="total3" step="0.01">
+            </div>
+        </div>
+    </div>
+
+    <div class="decision-box">
+        <h3>💡 Wirtschaftliche Entscheidung</h3>
+        <p>Welches Modell sollte Moritz Wagner aus Kostensicht wählen?</p>
+        <select id="user_choice">
+            <option value="">-- Bitte wählen --</option>
+            <option value="1">Alternative 1</option>
+            <option value="2">Alternative 2</option>
+            <option value="3">Alternative 3</option>
+        </select>
+        <button onclick="validateAll()">Gesamte Kalkulation prüfen</button>
+        <div id="result-display"></div>
+    </div>
+</div>
+
+<script>
+    function validateAll() {
+        const display = document.getElementById('result-display');
+        display.style.display = 'block';
+        
+        let errors = [];
+        let totals = [];
+
+        // Prüfe alle 3 Alternativen
+        for(let i=1; i<=3; i++) {
+            const ak = parseFloat(document.getElementById('ak'+i).value) || 0;
+            const j = parseFloat(document.getElementById('jahre'+i).value) || 0;
+            const uAkM = parseFloat(document.getElementById('ak_monat'+i).value) || 0;
+            const uTot = parseFloat(document.getElementById('total'+i).value) || 0;
+            
+            const w = parseFloat(document.getElementById('w'+i).value) || 0;
+            const b = parseFloat(document.getElementById('b'+i).value) || 0;
+            const s = parseFloat(document.getElementById('s'+i).value) || 0;
+
+            const correctAkM = ak / (j * 12);
+            const correctTot = correctAkM + w + b + s;
+            totals.push(correctTot);
+
+            if (Math.abs(correctAkM - uAkM) > 0.5) errors.push(`Alt. ${i}: AK pro Monat falsch.`);
+            if (Math.abs(correctTot - uTot) > 0.5) errors.push(`Alt. ${i}: Gesamtsumme falsch.`);
+        }
+
+        // Finde günstigste Alternative
+        const minCost = Math.min(...totals);
+        const bestIndex = totals.indexOf(minCost) + 1;
+        const userChoice = document.getElementById('user_choice').value;
+
+        if (errors.length > 0) {
+            display.className = 'wrong';
+            display.innerHTML = "❌ Korrigiere zuerst deine Rechenfehler:<br>" + errors.join("<br>");
+        } else if (userChoice != bestIndex) {
+            display.className = 'wrong';
+            display.innerHTML = "⚠️ Die Rechnung stimmt, aber deine Empfehlung ist falsch! Schau nochmal auf die Gesamtkosten.";
+        } else {
+            display.className = 'correct';
+            display.innerHTML = "🎉 PERFEKT! Alle Rechnungen sind korrekt und du hast die richtige wirtschaftliche Entscheidung getroffen.";
+        }
+    }
+</script>
+
+</body>
+</html>
